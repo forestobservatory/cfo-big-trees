@@ -1,0 +1,37 @@
+default_language_version:
+  python: python3.9
+
+repos:
+- repo: https://github.com/ambv/black
+  rev: stable
+  hooks:
+    - id: black
+      args: ["python", "--line-length=88", "--target-version=py39"]
+
+- repo: https://github.com/pycqa/flake8
+  rev: master
+  hooks:
+    - id: flake8
+      args: ["--select=C,E,F,W,B,B950", "--max-line-length=88", "--ignore=E203,E402,E501,W503,F401,E722,E741,F841"]
+
+- repo: https://github.com/timothycrosley/isort
+  rev: 5.8.0
+  hooks:
+    - id: isort
+      args: ["-l", "88", "--profile", "black", "python/"]
+
+-   repo: https://github.com/lorenzwalthert/pre-commit-hooks
+    rev: v0.0.0.9016
+    hooks: 
+    -   id: style-files
+    -   id: parsable-R
+    -   id: use-tidy-description
+    -   id: lintr
+
+- repo: https://github.com/pre-commit/pre-commit-hooks
+  rev: v2.4.0
+  hooks:
+    -   id: check-yaml
+    -   id: check-added-large-files
+    -   id: end-of-file-fixer
+    -   id: requirements-txt-fixer

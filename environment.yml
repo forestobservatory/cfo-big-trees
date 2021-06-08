@@ -1,0 +1,31 @@
+name: big-trees
+
+channels:
+  - conda-forge
+  - defaults
+
+dependencies:
+  - python>=3.7
+  - black
+  - descartes
+  - flake8
+  - gdal
+  - geopandas
+  - isort
+  - matplotlib
+  - pandas
+  - pre-commit
+  - rasterio
+  - rtree
+  - scikit-learn
+  - scipy
+  - shapely
+  - tqdm
+  - pip
+  - pip:
+    - cfo
+    - elapid
+    - mkdocs-material
+    - mkdocs-jupyter
+    - mkdocstrings
+    - git+https://github.com/digital-idiot/RotationForest.git
