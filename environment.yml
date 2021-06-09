@@ -8,10 +8,14 @@ dependencies:
   - python>=3.7
   - black
   - descartes
+  - earthengine-api
   - flake8
+  - folium
   - gdal
   - geopandas
+  - ipython
   - isort
+  - jupyter
   - matplotlib
   - pandas
   - pre-commit
