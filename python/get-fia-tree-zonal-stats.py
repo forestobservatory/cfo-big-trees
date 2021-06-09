@@ -1,5 +1,9 @@
 """Computes the mean, variance, skewness and kurtosis of tree height and canopy cover for a 1 ha buffer around fuzzed FIA plot centers"""
 
+import logging
+import os
+import sys
+
 import cfo
 import geopandas as gpd
 import numpy as np
@@ -8,13 +12,26 @@ from scipy import stats
 from tqdm import tqdm
 
 # set the file paths
-fia_path = "/home/cba/big-trees/fia_sierra_plots.shp"
-output_shp = "/home/cba/big-trees/fia-with-cfo-stats.shp"
+this_dir, this_script = os.path.split(os.path.abspath(__file__))
+data_dir = os.path.join(os.path.dirname(this_dir), "data")
+fia_path = os.path.join(data_dir, "fia_sierra_plots.shp")
+output_shp = os.path.join(data_dir, "fia-with-cfo-stats.shp")
 output_csv = f"{output_shp[:-4]}.csv"
+
+# cloud data paths
 ch_path = "gs://cfo-public/vegetation/California-Vegetation-CanopyHeight-2020-Spring-00003m.tif"
 cc_path = "gs://cfo-public/vegetation/California-Vegetation-CanopyCover-2020-Spring-00003m.tif"
 lf_path = "gs://cfo-public/vegetation/California-Vegetation-LadderFuelDensity-2020-Summer-00010m.tif"
 lc_path = "gs://cfo-public/vegetation/California-Vegetation-CanopyLayerCount-2020-Summer-00010m.tif"
+
+# logging setup
+logging.basicConfig(
+    level=logging.INFO,
+    format=("%(asctime)s %(levelname)s %(name)s [%(funcName)s] | %(message)s"),
+    stream=sys.stdout,
+)
+logger = logging.getLogger(__name__)
+logger.info(f"Running {this_script}")
 
 # authenticate with the cfo api for access to the cloud data
 forest = cfo.api()
@@ -24,6 +41,13 @@ forest.authenticate()
 buffer_size = 500
 fia = gpd.read_file(fia_path)
 buffer = fia.buffer(buffer_size).to_frame("geometry")
+# logging setup
+logging.basicConfig(
+    level=logging.INFO,
+    format=("%(asctime)s %(levelname)s %(name)s [%(funcName)s] | %(message)s"),
+    stream=sys.stdout,
+)
+logger = logging.getLogger(__name__)
 
 
 # create a function to get stats from each buffer
@@ -54,6 +78,8 @@ labels = ["CH", "CC", "LF", "LC"]
 stat_names = ["MN", "VA", "SK", "KU", "MX", "05", "25", "75", "95"]
 dfs = [fia]
 
+logger.info("Extracting data from each covariate")
+
 # run the stats on each dataset
 for path, label in tqdm(zip(paths, labels), total=len(paths), desc="Covariate"):
     with rio.open(path, "r") as src:
@@ -69,5 +95,8 @@ for df in dfs:
 output.columns = columns
 
 # save the results as a shape and a csv
+logger.info(f"Saving to SHP: {output_shp}")
 output.to_file(output_shp, driver="ESRI Shapefile")
+
+logger.info(f"Saving to CSV: {output_csv}")
 output.drop(["geometry"], axis=1).to_csv(output_csv, index=False)
