@@ -26,7 +26,6 @@ repos:
     -   id: style-files
     -   id: parsable-R
     -   id: use-tidy-description
-    -   id: lintr
 
 - repo: https://github.com/pre-commit/pre-commit-hooks
   rev: v4.0.1

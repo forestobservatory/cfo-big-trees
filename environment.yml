@@ -19,6 +19,9 @@ dependencies:
   - matplotlib
   - pandas
   - pre-commit
+  - r-base
+  - r-essentials
+  - r-irkernel
   - rasterio
   - rtree
   - scikit-learn
