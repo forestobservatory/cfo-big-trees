@@ -11,6 +11,7 @@
 - [Repository tools](#repository-tools)
     - [Conda](#conda)
     - [Pre-commit](#pre-commit)
+    - [Data](#data)
 - [Contact](#contact)
 
 ---
@@ -87,6 +88,12 @@ pre-commit install
 Once you've installed these hooks, `pre-commit` will run the automated code checks every time you run `git add {some-file.R}` and `git commit -m '{some message}'`. If it fails - don't worry! Pre-commit will typically apply the required changes needed to get the code properly formatted. You'll just need to re-run the above commands to add/commit the file again.
 
 The hooks used by this project are managed by the `.pre-commit-config.yml` file. This includes a set of pre-commit hooks for python and [pre-commit hooks for R](https://www.rdocumentation.org/packages/precommithooks), which are mostly for linting and styling files.
+
+## Data
+
+There are a series of data sets we work with in this project that are either too large to share (CFO geotiffs) or contain confidential information (FIA locations). The project partners have established a Google Drive directory that contains this data - at least some of it. But we still need to develop common scripts/workflows to consistently analyze these data
+
+The workaround for this is for project parters to download the relevant datasets they need, and store them in `data/`. This directory is ignored via the repository's `.gitignore` file, which means that any file in that directory will not be committed to git.
 
 ---
 
