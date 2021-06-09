@@ -10,6 +10,7 @@
 - [Project partners](#project-partners)
 - [Repository tools](#repository-tools)
     - [Conda](#conda)
+    - [R packages](#r-packages)
     - [Pre-commit](#pre-commit)
     - [Data](#data)
 - [Contact](#contact)
@@ -75,6 +76,16 @@ This will install all the project dependencies into a standalone environment, wh
 conda activate big-trees
 ```
 
+## R packages
+
+`conda` only hosts a subset of the many packages available through CRAN. In order to consistently declare and manage the `R` packages we use that are not available through `conda`, we've set up a short package install script. From within your conda environment, run:
+
+```bash
+Rscript R/requirements.R
+```
+
+Make sure you update this file each time you add new R scripts with new packages.
+
 ## pre-commit
 
 [pre-commit](https://pre-commit.com/) is tool for managing and maintaining multi-language code standards and `git` hygiene. These utilities will ensure that all code has been subjected to a series of automated checks - like consistently formatting code or preventing personal tokens from being uploaded - before any code gets committed to the repository.
@@ -93,7 +104,7 @@ The hooks used by this project are managed by the `.pre-commit-config.yml` file.
 
 There are a series of data sets we work with in this project that are either too large to share (CFO geotiffs) or contain confidential information (FIA locations). The project partners have established a Google Drive directory that contains this data - at least some of it. But we still need to develop common scripts/workflows to consistently analyze these data
 
-The workaround for this is for project parters to download the relevant datasets they need, and store them in `data/`. This directory is ignored via the repository's `.gitignore` file, which means that any file in that directory will not be committed to git.
+The workaround for this is for project parters to download the relevant datasets they need, and store them in `data/`. This directory is ignored via the repository's `.gitignore` file, which means that any file in that directory will not be committed to git. All paths to data files in code should point to `data/`.
 
 ---
 
