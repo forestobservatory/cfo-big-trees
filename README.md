@@ -6,8 +6,6 @@
 
 ---
 
-Table of Contents
-
 - [Introduction](#introduction)
 - [Project partners](#project-partners)
 - [Repository tools](#repository-tools)
@@ -29,10 +27,10 @@ Currently, little information exists as to the distribution of large trees acros
 
 The goals of this project are to: 
 
-1. Identify the locations of large trees
-1. Quantify their functional value for carbon storage and wildlife
-1. Use machine learning to model their biophysical environment and predict likely locations for large trees in the future, and
-1. Use a landscape simulation model to determine the effects of treatments on the distribution of large trees across a 1 million hectare subregion and assess their variability under climate change.
+- Identify the locations of large trees
+- Quantify their functional value for carbon storage and wildlife
+- Use machine learning to model their biophysical environment and predict likely locations for large trees in the future, and
+- Use a landscape simulation model to determine the effects of treatments on the distribution of large trees across a 1 million hectare subregion and assess their variability under climate change.
 
 This repository tracks our progress towards these goals.
 
@@ -46,7 +44,7 @@ The **Big Trees** project is a collaboration between [Blue Forest Conservation](
 
 # Repository tools
 
-This repository contains scripts, figures & documentation for the **Big Trees* project. You can clone the repository locally with:
+This repository contains scripts, figures & documentation for the **Big Trees** project. You can clone the repository locally with:
 
 ```bash
 git clone https://github.com/forestobservatory/cfo-big-trees.git
@@ -95,5 +93,5 @@ The hooks used by this project are managed by the `.pre-commit-config.yml` file.
 # Contact
 
 - Christopher Anderson (Salo Sciences) - [email](mailto:cba@salo.ai)
-- Kim Quesnel (Blue Forest Conservation) - [email](kim@blueforest.org)
+- Kim Quesnel (Blue Forest Conservation) - [email](mailto:kim@blueforest.org)
 - Nicholas Povak (USFS Region 5) - [email](mailto:nicholas.povak@usda.gov)
