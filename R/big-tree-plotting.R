@@ -1,37 +1,31 @@
 require(tidyverse)
+require(VGAM)
 
+# paths
 setwd("~/Documents/Salo/BigTrees")
-
 height_40m_obj_max <- read_csv("tcsi_height_03m_40m_obj_max.csv")
-
 height_40m_obj_n <- read_csv("tcsi_height_03m_40m_obj_n.csv")
 
-
+# exploratory plotting
 ggplot(data = height_40m_obj, aes(x = cfo, y = lidar)) +
   geom_hex()
 
 
-
-
+# functions
 rdpareto <- function(n, lambda, max) {
   x <- 9:max
   sample(x, size = n, replace = T, prob = ddpareto(x, lambda))
 }
 
-# Density function for the discrete Pareto distribution with parameter lambda
-
+# density function for the discrete Pareto distribution with parameter lambda
 ddpareto <- function(x, lambda) {
-  require(VGAM)
   x^-lambda / zeta(lambda)
 }
 
-# A function to return negative 2 times the log-likelihood of data under a
-# discrete Pareto distribution with scaling parameter lambda.
-
+# return negative 2x log-likelihood under a discrete Pareto distribution with scaling parameter lambda.
 dplik <- function(data, lambda) {
   sum(log(ddpareto(x = data, lambda = lambda)))
 }
-
 
 calc.lambda <- function(gap_data, se = TRUE, nbootstrap = 1000) {
   # lambda
@@ -53,6 +47,7 @@ calc.lambda <- function(gap_data, se = TRUE, nbootstrap = 1000) {
 }
 
 
+# analysis
 tcsi_clump_lambda <- calc.lambda(height_40m_obj_n$cfo, se = FALSE, nbootstrap = 1000)
 
 tsci_clump_hist <- hist(height_40m_obj_n$cfo, br = seq(0, max(height_40m_obj_n$cfo), 1), plot = F)
