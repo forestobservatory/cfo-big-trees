@@ -2,6 +2,7 @@ require(tidyverse)
 require(VGAM)
 
 # paths
+# TODO: update to current repository data/ directory paths
 setwd("~/Documents/Salo/BigTrees")
 height_40m_obj_max <- read_csv("tcsi_height_03m_40m_obj_max.csv")
 height_40m_obj_n <- read_csv("tcsi_height_03m_40m_obj_n.csv")
