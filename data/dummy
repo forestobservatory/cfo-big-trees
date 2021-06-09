@@ -1,0 +1,3 @@
+This file contains no useful information except the notice that this file exists solely to ensure the `data/` directory exists and is ported with the repository.
+
+Everything in `data/*` is not committed via the `.gitignore` file.
