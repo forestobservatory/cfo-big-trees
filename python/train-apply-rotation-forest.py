@@ -24,8 +24,9 @@ gdal.UseExceptions()
 # path / config setup
 
 # raw paths
-data = os.path.join("..", "data")
-plots = os.path.join("..", "docs", "img")
+this_dir, this_script = os.path.split(os.path.abspath(__file__))
+data = os.path.join(this_dir, "..", "data")
+plots = os.path.join(this_dir, "..", "docs", "img")
 training = os.path.join(data, "fia_calif_plot_level_climate_model.csv")
 
 # veg data
@@ -181,16 +182,19 @@ with rio.open(veg_vrt, "r") as src:
 
 profile.update(count=1)
 
-# set the output array
-env = np.zeros((1, x.shape[1]), dtype=np.float32)
-
 # set the output file
 outpath = os.path.join(data, f"{yvar}.tif")
+
+# store the results in a pre-allocated array
+ypred = np.zeros_like(mask, dtype=np.float32)
 
 with rio.open(veg_vrt, "r") as vsrc, rio.open(clim_tif, "r") as csrc, rio.open(
     outpath, "w", **profile
 ) as out:
     for xval, yval in tqdm(zip(xvals, yvals), total=len(xvals), desc="Tile"):
+
+        # set the output array
+        env = np.zeros((1, x.shape[1]), dtype=np.float32)
 
         # get spatial references
         xmin, ymin = csrc.xy(xval, yval, "ll")
@@ -227,5 +231,7 @@ with rio.open(veg_vrt, "r") as vsrc, rio.open(clim_tif, "r") as csrc, rio.open(
 
         # transform, apply, write
         xpc = transformer.transform(env)
-        ypred = model.predict(xpc).astype(np.float32)
-        out.write(ypred.reshape(-1, 1), 1, window=cwindow)
+        ypred[yval, xval] = model.predict(xpc)
+        # out.write(ypred.reshape(-1, 1), 1, window=cwindow)
+
+    out.write(ypred, 1)
