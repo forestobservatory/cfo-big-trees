@@ -47,8 +47,14 @@ veg_vrt = os.path.join(data, "veg.vrt")
 
 # climate data
 c_labels = ["aet", "aprpck", "cwd", "ppt", "tmn", "tmx"]
-clims = [os.path.join(f"{c_label}_sierra_sierra.tif") for c_label in c_labels]
+clims = [os.path.join(data, f"{c_label}_sierra_sierra.tif") for c_label in c_labels]
 clim_tif = os.path.join(data, "clim-utm.tif")
+clim_vrt = os.path.join(data, "clim-utm.vrt")
+clim_epsg = 3310
+
+# set some raster parameters
+utm_epsg = 32610
+ndvalue = -9999
 
 # logging setup
 logging.basicConfig(
@@ -61,7 +67,7 @@ logger.info(f"Running {__file__}")
 
 
 ##########
-# data setup
+# data preprocessing
 
 # create a VRT file to read the cloud tifs from
 if not os.path.exists(veg_vrt):
@@ -72,6 +78,45 @@ if not os.path.exists(veg_vrt):
 
     vrt = gdal.BuildVRT(veg_vrt, vegs, options=vrt_options)
     vrt.FlushCache()
+
+# replace climate data nan values with nodata, reproject to utm and stack the bands
+if not os.path.exists(clim_tif):
+    logger.info("Reprojecting and stacking climate data")
+    output_data = []
+
+    for clim_path in clims:
+        with rio.open(clim_path, "r+") as src:
+            src.crs = rio.crs.CRS.from_epsg(clim_epsg)
+            with rio.vrt.WarpedVRT(src, crs=rio.crs.CRS.from_epsg(utm_epsg)) as vrt:
+                output_profile = vrt.profile
+                cdata = vrt.read(1)
+                is_nan = ~np.isfinite(cdata)
+                is_nd = cdata == vrt.nodata
+                to_nd = is_nan | is_nd
+                cdata[to_nd] = ndvalue
+                output_data.append(cdata)
+
+    # set the output raster data profile
+    xsize, xoff, xmin, yoff, ysize, ymax, *other = output_profile["transform"]
+    transform = rio.transform.Affine(int(xsize), xoff, xmin, yoff, int(ysize), ymax)
+    output_profile.update(
+        driver="GTiff",
+        dtype="float32",
+        nodata=ndvalue,
+        count=len(c_labels),
+        blockxsize=512,
+        blockysize=512,
+        transform=transform,
+    )
+
+    # write each band to disk
+    with rio.open(clim_tif, "w", **output_profile) as dst:
+        for idx, cdata in enumerate(output_data):
+            dst.write(cdata, idx + 1)
+
+
+##########
+# model data setup
 
 # read the training data
 logger.info("Reading training data")
@@ -93,6 +138,7 @@ xtrain, xtest, ytrain, ytest = train_test_split(xt, y, train_size=0.7)
 
 ##########
 # model training
+logger.info("Training rotation forest model")
 
 # set weights
 ymax = np.percentile(y, 95)
@@ -111,7 +157,8 @@ model.fit(xtrain, ytrain, sample_weight=weights)
 ypred = model.predict(xtest)
 
 # save the model
-with open(os.path.join(data, f"{yvar}.pck"), "wb") as out:
+model_path = os.path.join(data, f"{yvar}.pck")
+with open(model_path, "wb") as out:
     pickle.dump(model, out)
 
 # run the numbers
@@ -185,9 +232,6 @@ profile.update(count=1)
 # set the output file
 outpath = os.path.join(data, f"{yvar}.tif")
 
-# store the results in a pre-allocated array
-ypred = np.zeros_like(mask, dtype=np.float32)
-
 with rio.open(veg_vrt, "r") as vsrc, rio.open(clim_tif, "r") as csrc, rio.open(
     outpath, "w", **profile
 ) as out:
@@ -202,36 +246,36 @@ with rio.open(veg_vrt, "r") as vsrc, rio.open(clim_tif, "r") as csrc, rio.open(
         vwindow = rio.windows.from_bounds(xmin, ymin, xmax, ymax, vtransform)
         cwindow = rio.windows.Window(xval, yval, 1, 1)
 
-        # read the data first
+        # read the climate data first and move on if nodata
+        clim = csrc.read(window=cwindow, masked=True)
         veg = vsrc.read(masked=True, window=vwindow)
-        clim = csrc.read(window=cwindow)
 
-        # assign values to the array
-        env[0, 0] = veg[0].mean()
-        env[0, 1] = veg[0].std() ** 2
-        env[0, 2] = stats.skew(veg[0], axis=None, nan_policy="omit")
-        env[0, 3] = stats.kurtosis(veg[0], axis=None, nan_policy="omit")
-        env[0, 4] = veg[1].mean()
-        env[0, 5] = veg[1].std() ** 2
-        env[0, 6] = stats.skew(veg[1], axis=None, nan_policy="omit")
-        env[0, 7] = stats.kurtosis(veg[1], axis=None, nan_policy="omit")
-        env[0, 8] = veg[2].mean()
-        env[0, 9] = veg[2].std() ** 2
-        env[0, 10] = stats.skew(veg[2], axis=None, nan_policy="omit")
-        env[0, 11] = stats.kurtosis(veg[2], axis=None, nan_policy="omit")
-        env[0, 12] = veg[3].mean()
-        env[0, 13] = veg[3].std() ** 2
-        env[0, 14] = stats.skew(veg[3], axis=None, nan_policy="omit")
-        env[0, 15] = stats.kurtosis(veg[3], axis=None, nan_policy="omit")
-        env[0, 16:] = np.squeeze(clim)
+        if np.all(veg.mask):
+            ypred = profile.nodata
 
-        nans = ~np.isfinite(env)
-        if nans.any():
-            env[nans] = 0
+        else:
+            # assign values to the array
+            env[0, 0] = veg[0].mean()
+            env[0, 1] = veg[0].std() ** 2
+            env[0, 2] = stats.skew(veg[0], axis=None, nan_policy="omit")
+            env[0, 3] = stats.kurtosis(veg[0], axis=None, nan_policy="omit")
+            env[0, 4] = veg[1].mean()
+            env[0, 5] = veg[1].std() ** 2
+            env[0, 6] = stats.skew(veg[1], axis=None, nan_policy="omit")
+            env[0, 7] = stats.kurtosis(veg[1], axis=None, nan_policy="omit")
+            env[0, 8] = veg[2].mean()
+            env[0, 9] = veg[2].std() ** 2
+            env[0, 10] = stats.skew(veg[2], axis=None, nan_policy="omit")
+            env[0, 11] = stats.kurtosis(veg[2], axis=None, nan_policy="omit")
+            env[0, 12] = veg[3].mean()
+            env[0, 13] = veg[3].std() ** 2
+            env[0, 14] = stats.skew(veg[3], axis=None, nan_policy="omit")
+            env[0, 15] = stats.kurtosis(veg[3], axis=None, nan_policy="omit")
+            env[0, 16:] = np.squeeze(clim)
 
-        # transform, apply, write
-        xpc = transformer.transform(env)
-        ypred[yval, xval] = model.predict(xpc)
-        # out.write(ypred.reshape(-1, 1), 1, window=cwindow)
+            # transform and apply the model
+            xpc = transformer.transform(env)
+            ypred = model.predict(xpc)
 
-    out.write(ypred, 1)
+        # write to disk
+        out.write(ypred.reshape(-1, 1), 1, window=cwindow)
