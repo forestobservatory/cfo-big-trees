@@ -44,15 +44,16 @@ vegs = [
     "/vsigs/cfo-public/vegetation/California-Vegetation-LadderFuelDensity-2020-Summer-00010m.tif",
 ]
 veg_vrt = os.path.join(data, "veg.vrt")
+veg_tif = os.path.join(data, "veg.tif")
 
 # climate data
 c_labels = ["aet", "aprpck", "cwd", "ppt", "tmn", "tmx"]
 clims = [os.path.join(data, f"{c_label}_sierra_sierra.tif") for c_label in c_labels]
 clim_tif = os.path.join(data, "clim-utm.tif")
 clim_vrt = os.path.join(data, "clim-utm.vrt")
-clim_epsg = 3310
 
 # set some raster parameters
+clim_epsg = 3310
 utm_epsg = 32610
 ndvalue = -9999
 
@@ -68,16 +69,6 @@ logger.info(f"Running {__file__}")
 
 ##########
 # data preprocessing
-
-# create a VRT file to read the cloud tifs from
-if not os.path.exists(veg_vrt):
-    logger.info("Building Cloud VRT")
-    vrt_options = gdal.BuildVRTOptions(
-        separate=True,
-    )
-
-    vrt = gdal.BuildVRT(veg_vrt, vegs, options=vrt_options)
-    vrt.FlushCache()
 
 # replace climate data nan values with nodata, reproject to utm and stack the bands
 if not os.path.exists(clim_tif):
@@ -114,6 +105,35 @@ if not os.path.exists(clim_tif):
         for idx, cdata in enumerate(output_data):
             dst.write(cdata, idx + 1)
 
+# create a VRT file to read the cloud tifs from
+if not os.path.exists(veg_vrt):
+    logger.info("Building Cloud VRT")
+
+    # get the spatial extent from the climate data
+    with rio.open(clim_tif, "r") as src:
+        bounds = src.bounds
+
+    vrt_options = gdal.BuildVRTOptions(separate=True, outputBounds=bounds)
+
+    vrt = gdal.BuildVRT(veg_vrt, vegs, options=vrt_options)
+    vrt.FlushCache()
+
+# and write these data to a local tif file for faster reading
+if not os.path.exists(veg_tif):
+    logger.info("Building Veg. Raster")
+
+    creation_options = [
+        "COMPRESS=DEFLATE",
+        "TILED=YES",
+        "NUM_THREADS=ALL_CPUS",
+        "BIGTIFF=YES",
+    ]
+    translate_options = gdal.TranslateOptions(
+        creationOptions=creation_options,
+    )
+
+    translate = gdal.Translate(veg_tif, veg_vrt, options=translate_options)
+    translate.FlushCache()
 
 ##########
 # model data setup
@@ -232,7 +252,7 @@ profile.update(count=1)
 # set the output file
 outpath = os.path.join(data, f"{yvar}.tif")
 
-with rio.open(veg_vrt, "r") as vsrc, rio.open(clim_tif, "r") as csrc, rio.open(
+with rio.open(veg_tif, "r") as vsrc, rio.open(clim_tif, "r") as csrc, rio.open(
     outpath, "w", **profile
 ) as out:
     for xval, yval in tqdm(zip(xvals, yvals), total=len(xvals), desc="Tile"):
@@ -251,7 +271,7 @@ with rio.open(veg_vrt, "r") as vsrc, rio.open(clim_tif, "r") as csrc, rio.open(
         veg = vsrc.read(masked=True, window=vwindow)
 
         if np.all(veg.mask):
-            ypred = profile.nodata
+            ypred = profile["nodata"]
 
         else:
             # assign values to the array
