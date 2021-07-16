@@ -1,4 +1,4 @@
-"""Trains a rotation forest model to predict carbon-relevant forest structure patterns from climate and CFO data"""
+"""Trains a rotation forest model to predict carbon-relevant forest structure patterns from climate and CFO data."""
 
 import logging
 import os
@@ -154,34 +154,39 @@ xt = transformer.fit_transform(x)
 
 # train test split
 xtrain, xtest, ytrain, ytest = train_test_split(xt, y, train_size=0.7)
+ymax = np.percentile(y, 95)
 
 
 ##########
 # model training
-logger.info("Training rotation forest model")
 
-# set weights
-ymax = np.percentile(y, 95)
-hist, edges = np.histogram(y, range=(0, ymax))
-edges[-1] = y.max()
-
-weights = np.zeros_like(ytrain)
-bin_weights = 1 / (hist / hist.sum())
-for i in range(len(hist)):
-    in_range = (edges[i] < ytrain) & (ytrain <= edges[i + 1])
-    weights[in_range] = bin_weights[i]
-
-model = GradientBoostingRegressor(max_depth=10, validation_fraction=0.2)
-
-model.fit(xtrain, ytrain, sample_weight=weights)
-ypred = model.predict(xtest)
-
-# save the model
 model_path = os.path.join(data, f"{yvar}.pck")
-with open(model_path, "wb") as out:
-    pickle.dump(model, out)
+if os.path.exists(model_path):
+    with open(model_path, "rb") as inf:
+        model = pickle.loads(inf.read())
 
-# run the numbers
+else:
+    logger.info("Training rotation forest model")
+
+    # set weights
+    hist, edges = np.histogram(y, range=(0, ymax))
+    edges[-1] = y.max()
+
+    weights = np.zeros_like(ytrain)
+    bin_weights = 1 / (hist / hist.sum())
+    for i in range(len(hist)):
+        in_range = (edges[i] < ytrain) & (ytrain <= edges[i + 1])
+        weights[in_range] = bin_weights[i]
+
+    model = GradientBoostingRegressor(max_depth=10, validation_fraction=0.2)
+    model.fit(xtrain, ytrain, sample_weight=weights)
+
+    # save it
+    with open(model_path, "wb") as out:
+        pickle.dump(model, out)
+
+# run performance the numbers
+ypred = model.predict(xtest)
 rsq = metrics.r2_score(ytest, ypred)
 mae = metrics.mean_absolute_error(ytest, ypred)
 
@@ -252,50 +257,50 @@ profile.update(count=1)
 # set the output file
 outpath = os.path.join(data, f"{yvar}.tif")
 
-with rio.open(veg_tif, "r") as vsrc, rio.open(clim_tif, "r") as csrc, rio.open(
-    outpath, "w", **profile
-) as out:
-    for xval, yval in tqdm(zip(xvals, yvals), total=len(xvals), desc="Tile"):
 
-        # set the output array
-        env = np.zeros((1, x.shape[1]), dtype=np.float32)
+with rio.open(veg_tif, "r") as vsrc, rio.open(clim_tif, "r") as csrc:
+    with rio.open(outpath, "w", **profile) as out:
+        for xval, yval in tqdm(zip(xvals, yvals), total=len(xvals), desc="Tile"):
 
-        # get spatial references
-        xmin, ymin = csrc.xy(xval, yval, "ll")
-        xmax, ymax = (xmin + yres, ymin + yres)
-        vwindow = rio.windows.from_bounds(xmin, ymin, xmax, ymax, vtransform)
-        cwindow = rio.windows.Window(xval, yval, 1, 1)
+            # set the output array
+            env = np.zeros((1, x.shape[1]), dtype=np.float32)
 
-        # read the climate data first and move on if nodata
-        clim = csrc.read(window=cwindow, masked=True)
-        veg = vsrc.read(masked=True, window=vwindow)
+            # get spatial references
+            xmin, ymin = csrc.xy(yval, xval, "ll")
+            xmax, ymax = (xmin + yres, ymin + yres)
+            vwindow = rio.windows.from_bounds(xmin, ymin, xmax, ymax, vtransform)
+            cwindow = rio.windows.Window(xval, yval, 1, 1)
 
-        if np.all(veg.mask):
-            ypred = profile["nodata"]
+            # read the climate data first and move on if nodata
+            clim = csrc.read(window=cwindow, masked=True)
+            veg = vsrc.read(masked=True, window=vwindow)
 
-        else:
-            # assign values to the array
-            env[0, 0] = veg[0].mean()
-            env[0, 1] = veg[0].std() ** 2
-            env[0, 2] = stats.skew(veg[0], axis=None, nan_policy="omit")
-            env[0, 3] = stats.kurtosis(veg[0], axis=None, nan_policy="omit")
-            env[0, 4] = veg[1].mean()
-            env[0, 5] = veg[1].std() ** 2
-            env[0, 6] = stats.skew(veg[1], axis=None, nan_policy="omit")
-            env[0, 7] = stats.kurtosis(veg[1], axis=None, nan_policy="omit")
-            env[0, 8] = veg[2].mean()
-            env[0, 9] = veg[2].std() ** 2
-            env[0, 10] = stats.skew(veg[2], axis=None, nan_policy="omit")
-            env[0, 11] = stats.kurtosis(veg[2], axis=None, nan_policy="omit")
-            env[0, 12] = veg[3].mean()
-            env[0, 13] = veg[3].std() ** 2
-            env[0, 14] = stats.skew(veg[3], axis=None, nan_policy="omit")
-            env[0, 15] = stats.kurtosis(veg[3], axis=None, nan_policy="omit")
-            env[0, 16:] = np.squeeze(clim)
+            if np.all(veg.mask):
+                continue
 
-            # transform and apply the model
-            xpc = transformer.transform(env)
-            ypred = model.predict(xpc)
+            else:
+                # assign values to the array
+                env[0, 0] = veg[0].mean()
+                env[0, 1] = veg[0].std() ** 2
+                env[0, 2] = stats.skew(veg[0], axis=None, nan_policy="omit")
+                env[0, 3] = stats.kurtosis(veg[0], axis=None, nan_policy="omit")
+                env[0, 4] = veg[1].mean()
+                env[0, 5] = veg[1].std() ** 2
+                env[0, 6] = stats.skew(veg[1], axis=None, nan_policy="omit")
+                env[0, 7] = stats.kurtosis(veg[1], axis=None, nan_policy="omit")
+                env[0, 8] = veg[2].mean()
+                env[0, 9] = veg[2].std() ** 2
+                env[0, 10] = stats.skew(veg[2], axis=None, nan_policy="omit")
+                env[0, 11] = stats.kurtosis(veg[2], axis=None, nan_policy="omit")
+                env[0, 12] = veg[3].mean()
+                env[0, 13] = veg[3].std() ** 2
+                env[0, 14] = stats.skew(veg[3], axis=None, nan_policy="omit")
+                env[0, 15] = stats.kurtosis(veg[3], axis=None, nan_policy="omit")
+                env[0, 16:] = np.squeeze(clim)
 
-        # write to disk
-        out.write(ypred.reshape(-1, 1), 1, window=cwindow)
+                # transform and apply the model
+                xpc = transformer.transform(env)
+                ypred = model.predict(xpc)
+
+                # write to disk
+                out.write(ypred.reshape(-1, 1), 1, window=cwindow)
