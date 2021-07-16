@@ -67,7 +67,7 @@ logger = logging.getLogger(__name__)
 logger.info(f"Running {__file__}")
 
 
-##########
+###########
 # data preprocessing
 
 # replace climate data nan values with nodata, reproject to utm and stack the bands
