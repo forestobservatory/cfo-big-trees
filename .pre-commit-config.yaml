@@ -6,19 +6,19 @@ repos:
   rev: 21.5b2
   hooks:
     - id: black
-      args: ["python", "--line-length=88", "--target-version=py39"]
+      args: ["python", "--line-length=120", "--target-version=py39"]
 
 - repo: https://github.com/pycqa/flake8
   rev: 3.9.2
   hooks:
     - id: flake8
-      args: ["--select=C,E,F,W,B,B950", "--max-line-length=88", "--ignore=E203,E402,E501,W503,F401,E722,E741,F841"]
+      args: ["--select=C,E,F,W,B,B950", "--max-line-length=120", "--ignore=E203,E402,E501,W503,F401,E722,E741,F841"]
 
 - repo: https://github.com/timothycrosley/isort
   rev: 5.8.0
   hooks:
     - id: isort
-      args: ["-l", "88", "--profile", "black", "python/"]
+      args: ["-l", "120", "--profile", "black", "python/"]
 
 -   repo: https://github.com/lorenzwalthert/pre-commit-hooks
     rev: v0.1.3.9012
