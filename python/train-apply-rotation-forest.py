@@ -56,6 +56,7 @@ clim_vrt = os.path.join(data, "clim-utm.vrt")
 clim_epsg = 3310
 utm_epsg = 32610
 ndvalue = -9999
+rerun_models = True
 
 # logging setup
 logging.basicConfig(
@@ -161,7 +162,7 @@ ymax = np.percentile(y, 95)
 # model training
 
 model_path = os.path.join(data, f"{yvar}.pck")
-if os.path.exists(model_path):
+if os.path.exists(model_path) and not rerun_models:
     with open(model_path, "rb") as inf:
         model = pickle.loads(inf.read())
 
@@ -178,7 +179,7 @@ else:
         in_range = (edges[i] < ytrain) & (ytrain <= edges[i + 1])
         weights[in_range] = bin_weights[i]
 
-    model = GradientBoostingRegressor(max_depth=10, validation_fraction=0.2)
+    model = GradientBoostingRegressor(max_depth=10, validation_fraction=0.3)
     model.fit(xtrain, ytrain, sample_weight=weights)
 
     # save it
@@ -197,6 +198,7 @@ logging.info(f"mae: {mae:0.2f}")
 
 ##########
 # plotting performance
+logging.info("Writing model performance plots")
 
 # set figure parameters
 plt.figure(figsize=(5, 4), dpi=125)
@@ -241,6 +243,8 @@ plt.close()
 
 ##########
 # model inference
+
+logging.info("Applying model")
 
 # get the output dimensions and profile
 with rio.open(clim_tif, "r") as src:
