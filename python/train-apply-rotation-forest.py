@@ -17,6 +17,8 @@ from sklearn.ensemble import GradientBoostingRegressor
 from sklearn.model_selection import train_test_split
 from tqdm import tqdm
 
+import giants
+
 gdal.UseExceptions()
 
 
@@ -157,10 +159,14 @@ xt = transformer.fit_transform(x)
 xtrain, xtest, ytrain, ytest = train_test_split(xt, y, train_size=0.7)
 ymax = np.percentile(y, 95)
 
+# model tuning
+tuner = giants.model.Tuner(xtrain, ytrain)
+tuner.GradientBoostingRegressor()
+model = tuner.best_estimator
 
 ##########
 # model training
-
+"""
 model_path = os.path.join(data, f"{yvar}.pck")
 if os.path.exists(model_path) and not rerun_models:
     with open(model_path, "rb") as inf:
@@ -185,6 +191,7 @@ else:
     # save it
     with open(model_path, "wb") as out:
         pickle.dump(model, out)
+"""
 
 # run performance the numbers
 ypred = model.predict(xtest)
