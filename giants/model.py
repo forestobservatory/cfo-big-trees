@@ -159,7 +159,7 @@ class Tuner(object):
         Args:
             param_grid: Hyperparameter values to explore in grid searching.
             optimizer: Method for evaluating hyperparameter combinations.
-                From the `sklearn` group of hyper-parameter optimizers.
+                From the `sklearn` group of hyperparameter optimizers.
             scorer: Performance metric to optimize in model training.
                 Get available options with `list_scorers()` function.
             cv: Determines the cross-validation splitting strategy. Possible inputs for cv are:
@@ -190,7 +190,7 @@ class Tuner(object):
         Args:
             param_grid: Hyperparameter values to explore in grid searching.
             optimizer: Method for evaluating hyperparameter combinations.
-                From the `sklearn` group of hyper-parameter optimizers.
+                From the `sklearn` group of hyperparameter optimizers.
             scorer: Performance metric to optimize in model training.
                 Get available options with `list_scorers()` function.
             cv: Determines the cross-validation splitting strategy. Possible inputs for cv are:
@@ -221,7 +221,7 @@ class Tuner(object):
         Args:
             param_grid: Hyperparameter values to explore in grid searching.
             optimizer: Method for evaluating hyperparameter combinations.
-                From the `sklearn` group of hyper-parameter optimizers.
+                From the `sklearn` group of hyperparameter optimizers.
             scorer: Performance metric to optimize in model training.
                 Get available options with `list_scorers()` function.
             cv: Determines the cross-validation splitting strategy. Possible inputs for cv are:
@@ -252,7 +252,7 @@ class Tuner(object):
         Args:
             param_grid: Hyperparameter values to explore in grid searching.
             optimizer: Method for evaluating hyperparameter combinations.
-                From the `sklearn` group of hyper-parameter optimizers.
+                From the `sklearn` group of hyperparameter optimizers.
             scorer: Performance metric to optimize in model training.
                 Get available options with `list_scorers()` function.
             cv: Determines the cross-validation splitting strategy. Possible inputs for cv are:
@@ -283,7 +283,7 @@ class Tuner(object):
         Args:
             param_grid: Hyperparameter values to explore in grid searching.
             optimizer: Method for evaluating hyperparameter combinations.
-                From the `sklearn` group of hyper-parameter optimizers.
+                From the `sklearn` group of hyperparameter optimizers.
             scorer: Performance metric to optimize in model training.
                 Get available options with `list_scorers()` function.
             cv: Determines the cross-validation splitting strategy. Possible inputs for cv are:
@@ -314,7 +314,7 @@ class Tuner(object):
         Args:
             param_grid: Hyperparameter values to explore in grid searching.
             optimizer: Method for evaluating hyperparameter combinations.
-                From the `sklearn` group of hyper-parameter optimizers.
+                From the `sklearn` group of hyperparameter optimizers.
             scorer: Performance metric to optimize in model training.
                 Get available options with `list_scorers()` function.
             cv: Determines the cross-validation splitting strategy. Possible inputs for cv are:
@@ -345,7 +345,7 @@ class Tuner(object):
         Args:
             param_grid: Hyperparameter values to explore in grid searching.
             optimizer: Method for evaluating hyperparameter combinations.
-                From the `sklearn` group of hyper-parameter optimizers.
+                From the `sklearn` group of hyperparameter optimizers.
             scorer: Performance metric to optimize in model training.
                 Get available options with `list_scorers()` function.
             cv: Determines the cross-validation splitting strategy. Possible inputs for cv are:
@@ -376,7 +376,7 @@ class Tuner(object):
         Args:
             param_grid: Hyperparameter values to explore in grid searching.
             optimizer: Method for evaluating hyperparameter combinations.
-                From the `sklearn` group of hyper-parameter optimizers.
+                From the `sklearn` group of hyperparameter optimizers.
             scorer: Performance metric to optimize in model training.
                 Get available options with `list_scorers()` function.
             cv: Determines the cross-validation splitting strategy. Possible inputs for cv are:
@@ -407,7 +407,7 @@ class Tuner(object):
         Args:
             param_grid: Hyperparameter values to explore in grid searching.
             optimizer: Method for evaluating hyperparameter combinations.
-                From the `sklearn` group of hyper-parameter optimizers.
+                From the `sklearn` group of hyperparameter optimizers.
             scorer: Performance metric to optimize in model training.
                 Get available options with `list_scorers()` function.
             cv: Determines the cross-validation splitting strategy. Possible inputs for cv are:
@@ -438,7 +438,7 @@ class Tuner(object):
         Args:
             param_grid: Hyperparameter values to explore in grid searching.
             optimizer: Method for evaluating hyperparameter combinations.
-                From the `sklearn` group of hyper-parameter optimizers.
+                From the `sklearn` group of hyperparameter optimizers.
             scorer: Performance metric to optimize in model training.
                 Get available options with `list_scorers()` function.
             cv: Determines the cross-validation splitting strategy. Possible inputs for cv are:
@@ -469,7 +469,7 @@ class Tuner(object):
         Args:
             param_grid: Hyperparameter values to explore in grid searching.
             optimizer: Method for evaluating hyperparameter combinations.
-                From the `sklearn` group of hyper-parameter optimizers.
+                From the `sklearn` group of hyperparameter optimizers.
             scorer: Performance metric to optimize in model training.
                 Get available options with `list_scorers()` function.
             cv: Determines the cross-validation splitting strategy. Possible inputs for cv are:
@@ -500,7 +500,7 @@ class Tuner(object):
         Args:
             param_grid: Hyperparameter values to explore in grid searching.
             optimizer: Method for evaluating hyperparameter combinations.
-                From the `sklearn` group of hyper-parameter optimizers.
+                From the `sklearn` group of hyperparameter optimizers.
             scorer: Performance metric to optimize in model training.
                 Get available options with `list_scorers()` function.
             cv: Determines the cross-validation splitting strategy. Possible inputs for cv are:
@@ -531,7 +531,7 @@ class Tuner(object):
         Args:
             param_grid: Hyperparameter values to explore in grid searching.
             optimizer: Method for evaluating hyperparameter combinations.
-                From the `sklearn` group of hyper-parameter optimizers.
+                From the `sklearn` group of hyperparameter optimizers.
             scorer: Performance metric to optimize in model training.
                 Get available options with `list_scorers()` function.
             cv: Determines the cross-validation splitting strategy. Possible inputs for cv are:
