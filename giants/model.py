@@ -151,7 +151,7 @@ class Tuner(object):
         param_grid: Types.ParameterGrid = ParamGrids.AdaBoostClassifier,
         optimizer: Types.BaseSearchCV = ModelDefaults.Optimizer,
         scorer: str = ModelDefaults.ClassificationScorer,
-        cv: Types.BaseCrossValidator = ModelDefaults.CVType,
+        cv: Types.BaseCrossValidator = ModelDefaults.CVClassification,
         fit_params: dict = None,
     ) -> None:
         """Run hyperparameter tuning for an AdaBoostClassifier model.
@@ -182,7 +182,7 @@ class Tuner(object):
         param_grid: Types.ParameterGrid = ParamGrids.AdaBoostRegressor,
         optimizer: Types.BaseSearchCV = ModelDefaults.Optimizer,
         scorer: str = ModelDefaults.RegressionScorer,
-        cv: Types.BaseCrossValidator = ModelDefaults.CVType,
+        cv: Types.BaseCrossValidator = ModelDefaults.CVRegression,
         fit_params: dict = None,
     ) -> None:
         """Run hyperparameter tuning for an AdaBoostRegression model.
@@ -213,7 +213,7 @@ class Tuner(object):
         param_grid: Types.ParameterGrid = ParamGrids.DecisionTreeClassifier,
         optimizer: Types.BaseSearchCV = ModelDefaults.Optimizer,
         scorer: str = ModelDefaults.ClassificationScorer,
-        cv: Types.BaseCrossValidator = ModelDefaults.CVType,
+        cv: Types.BaseCrossValidator = ModelDefaults.CVClassification,
         fit_params: dict = None,
     ) -> None:
         """Run hyperparameter tuning for a DecisionTreeClassifier model.
@@ -244,7 +244,7 @@ class Tuner(object):
         param_grid: Types.ParameterGrid = ParamGrids.GradientBoostingClassifier,
         optimizer: Types.BaseSearchCV = ModelDefaults.Optimizer,
         scorer: str = ModelDefaults.ClassificationScorer,
-        cv: Types.BaseCrossValidator = ModelDefaults.CVType,
+        cv: Types.BaseCrossValidator = ModelDefaults.CVClassification,
         fit_params: dict = None,
     ) -> None:
         """Run hyperparameter tuning for a GradientBoostingClassifier model.
@@ -275,7 +275,7 @@ class Tuner(object):
         param_grid: Types.ParameterGrid = ParamGrids.GradientBoostingRegressor,
         optimizer: Types.BaseSearchCV = ModelDefaults.Optimizer,
         scorer: str = ModelDefaults.RegressionScorer,
-        cv: Types.BaseCrossValidator = ModelDefaults.CVType,
+        cv: Types.BaseCrossValidator = ModelDefaults.CVRegression,
         fit_params: dict = None,
     ) -> None:
         """Run hyperparameter tuning for a GradientBoostingRegressor model.
@@ -306,7 +306,7 @@ class Tuner(object):
         param_grid: Types.ParameterGrid = ParamGrids.LinearRegression,
         optimizer: Types.BaseSearchCV = ModelDefaults.Optimizer,
         scorer: str = ModelDefaults.RegressionScorer,
-        cv: Types.BaseCrossValidator = ModelDefaults.CVType,
+        cv: Types.BaseCrossValidator = ModelDefaults.CVRegression,
         fit_params: dict = None,
     ) -> None:
         """Run hyperparameter tuning for a LinearRegression model.
@@ -337,7 +337,7 @@ class Tuner(object):
         param_grid: Types.ParameterGrid = ParamGrids.LinearSVC,
         optimizer: Types.BaseSearchCV = ModelDefaults.Optimizer,
         scorer: str = ModelDefaults.ClassificationScorer,
-        cv: Types.BaseCrossValidator = ModelDefaults.CVType,
+        cv: Types.BaseCrossValidator = ModelDefaults.CVClassification,
         fit_params: dict = None,
     ) -> None:
         """Run hyperparameter tuning for a Linear Support Vector Machine classifier model.
@@ -368,7 +368,7 @@ class Tuner(object):
         param_grid: Types.ParameterGrid = ParamGrids.LinearSVR,
         optimizer: Types.BaseSearchCV = ModelDefaults.Optimizer,
         scorer: str = ModelDefaults.RegressionScorer,
-        cv: Types.BaseCrossValidator = ModelDefaults.CVType,
+        cv: Types.BaseCrossValidator = ModelDefaults.CVRegression,
         fit_params: dict = None,
     ) -> None:
         """Run hyperparameter tuning for a Linear Support Vector Machine regression model.
@@ -399,7 +399,7 @@ class Tuner(object):
         param_grid: Types.ParameterGrid = ParamGrids.LogisticRegression,
         optimizer: Types.BaseSearchCV = ModelDefaults.Optimizer,
         scorer: str = ModelDefaults.RegressionScorer,
-        cv: Types.BaseCrossValidator = ModelDefaults.CVType,
+        cv: Types.BaseCrossValidator = ModelDefaults.CVRegression,
         fit_params: dict = None,
     ) -> None:
         """Run hyperparameter tuning for a LogisticRegression model.
@@ -430,7 +430,7 @@ class Tuner(object):
         param_grid: Types.ParameterGrid = ParamGrids.RandomForestClassifier,
         optimizer: Types.BaseSearchCV = ModelDefaults.Optimizer,
         scorer: str = ModelDefaults.ClassificationScorer,
-        cv: Types.BaseCrossValidator = ModelDefaults.CVType,
+        cv: Types.BaseCrossValidator = ModelDefaults.CVClassification,
         fit_params: dict = None,
     ) -> None:
         """Run hyperparameter tuning for a RandomForestClassifier model.
@@ -461,7 +461,7 @@ class Tuner(object):
         param_grid: Types.ParameterGrid = ParamGrids.RandomForestRegressor,
         optimizer: Types.BaseSearchCV = ModelDefaults.Optimizer,
         scorer: str = ModelDefaults.RegressionScorer,
-        cv: Types.BaseCrossValidator = ModelDefaults.CVType,
+        cv: Types.BaseCrossValidator = ModelDefaults.CVRegression,
         fit_params: dict = None,
     ) -> None:
         """Run hyperparameter tuning for a RandomForestRegressor model.
@@ -492,7 +492,7 @@ class Tuner(object):
         param_grid: Types.ParameterGrid = ParamGrids.SVC,
         optimizer: Types.BaseSearchCV = ModelDefaults.Optimizer,
         scorer: str = ModelDefaults.ClassificationScorer,
-        cv: Types.BaseCrossValidator = ModelDefaults.CVType,
+        cv: Types.BaseCrossValidator = ModelDefaults.CVClassification,
         fit_params: dict = None,
     ) -> None:
         """Run hyperparameter tuning for a Support Vector Machine classifier (SVC) model.
@@ -523,7 +523,7 @@ class Tuner(object):
         param_grid: Types.ParameterGrid = ParamGrids.SVR,
         optimizer: Types.BaseSearchCV = ModelDefaults.Optimizer,
         scorer: str = ModelDefaults.RegressionScorer,
-        cv: Types.BaseCrossValidator = ModelDefaults.CVType,
+        cv: Types.BaseCrossValidator = ModelDefaults.CVRegression,
         fit_params: dict = None,
     ) -> None:
         """Run hyperparameter tuning for a Support Vector Machine Regression (SVR) model.

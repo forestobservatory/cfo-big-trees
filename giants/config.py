@@ -25,10 +25,11 @@ class ModelConfig(object):
     """Stores default model tuning parameters"""
 
     ClassificationScorer = "neg_log_loss"
-    CVType = model_selection.StratifiedKFold
+    CVClassification = model_selection.StratifiedKFold
+    CVRegression = model_selection.KFold
     ErrorScore = 0
     NumberOfSplits = 4
-    NumberOfJobs = mp.cpu_count() - 1
+    NumberOfJobs = mp.cpu_count()
     Optimizer = model_selection.GridSearchCV
     RefitModels = True
     RegressionScorer = "neg_mean_squared_error"
@@ -75,14 +76,14 @@ class ParamGridConfig(object):
         "learning_rate": (0.01, 0.1, 0.5),
         "max_features": ("sqrt", "log2", None),
         "max_depth": (1, 10, None),
-        "min_samples_split": (2, 0.01, 0.1),
+        "min_samples_split": (2, 0.1, 0.01),
     }
     GradientBoostingRegressor = {
         "n_estimators": (10, 100, 200),
         "learning_rate": (0.01, 0.1, 0.5),
         "max_features": ("sqrt", "log2", None),
         "max_depth": (1, 10, None),
-        "min_samples_split": (2, 0.01, 0.1),
+        "min_samples_split": (2, 0.1, 0.01),
     }
     LinearRegression = {"normalize": (True, False), "fit_intercept": (True, False)}
     LinearSVC = {
@@ -103,16 +104,16 @@ class ParamGridConfig(object):
     LogisticRegression = {"C": (1e-2, 1e-1, 1e0, 1e1), "tol": (1e-3, 1e-4, 1e-5), "fit_intercept": (True, False)}
     RandomForestClassifier = {
         "criterion": ("gini", "entropy"),
-        "n_estimators": (10, 100, 500),
+        "n_estimators": (10, 100, 200),
         "max_features": ("sqrt", "log2", None),
         "max_depth": (1, 10, None),
-        "min_samples_split": (2, 0.01, 0.1),
+        "min_samples_split": (2, 0.1, 0.01),
     }
     RandomForestRegressor = {
-        "n_estimators": (10, 100, 500),
+        "n_estimators": (10, 100, 200),
         "max_features": ("sqrt", "log2", None),
         "max_depth": (1, 10, None),
-        "min_samples_split": (2, 0.01, 0.1),
+        "min_samples_split": (2, 0.1, 0.01),
     }
     SVC = {
         "C": (1e-3, 1e-2, 1e-1, 1e0, 1e1),
