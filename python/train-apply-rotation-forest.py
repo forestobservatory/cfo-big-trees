@@ -17,6 +17,8 @@ from sklearn.ensemble import GradientBoostingRegressor
 from sklearn.model_selection import train_test_split
 from tqdm import tqdm
 
+import giants
+
 gdal.UseExceptions()
 
 
@@ -27,10 +29,10 @@ gdal.UseExceptions()
 this_dir, this_script = os.path.split(os.path.abspath(__file__))
 data = os.path.join(this_dir, "..", "data")
 plots = os.path.join(this_dir, "..", "docs", "img")
-training = os.path.join(data, "fia_calif_plot_level_climate_model.csv")
+training = os.path.join(data, "fia_calif_plot_level_climate_model_liveOnly.csv")
 
 # veg data
-v_metrics = ["CC", "CH", "LF", "LC"]
+v_metrics = ["CC", "CH", "LC", "LF"]
 moments = ["MN", "VA", "SK", "KU"]
 v_labels = []
 for metric in v_metrics:
@@ -115,7 +117,6 @@ if not os.path.exists(veg_vrt):
         bounds = src.bounds
 
     vrt_options = gdal.BuildVRTOptions(separate=True, outputBounds=bounds)
-
     vrt = gdal.BuildVRT(veg_vrt, vegs, options=vrt_options)
     vrt.FlushCache()
 
@@ -154,9 +155,13 @@ transformer = PCA(whiten=True)
 xt = transformer.fit_transform(x)
 
 # train test split
-xtrain, xtest, ytrain, ytest = train_test_split(xt, y, train_size=0.7)
+xtrain, xtest, ytrain, ytest = train_test_split(x, y, train_size=0.7)
 ymax = np.percentile(y, 95)
 
+# model tuning
+tuner = giants.model.Tuner(xtrain, ytrain)
+tuner.GradientBoostingRegressor(scorer="r2")
+model = tuner.best_estimator
 
 ##########
 # model training
