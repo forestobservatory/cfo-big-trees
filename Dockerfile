@@ -5,15 +5,10 @@ ENV APP_HOME /app
 WORKDIR $APP_HOME
 
 # install gsutil dependencies
-RUN apt-get update -yq && \
-    apt-get install -yq \
-    gcc \
-    python-dev \
-    python-setuptools \
-    libffi-dev \
-    curl && \
-    apt-get autoclean -y && \
-    rm -rf /var/lib/apt/lists/*
+RUN apt-get --allow-releaseinfo-change update -yq \
+  && apt-get install -yq gcc python-dev python-setuptools libffi-dev curl \
+  && apt-get autoclean -y \
+  && rm -rf /var/lib/apt/lists/*
 
 # install gsutil
 RUN curl -sSL https://sdk.cloud.google.com | bash
