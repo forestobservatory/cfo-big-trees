@@ -17,17 +17,16 @@ RUN curl -sSL https://sdk.cloud.google.com | bash
 
 # install conda
 ENV INSTALLER installer.sh
-ENV CONDA_DIR=${APP_HOME}/miniconda3
+ENV CONDA_DIR ${APP_HOME}/miniconda3
+ENV CONDA ${CONDA_DIR}/bin/conda
 RUN curl -o ${INSTALLER} "https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh" \
   && bash ${INSTALLER} -b -p ${CONDA_DIR} \
-  && rm ${INSTALLER} \
-  && ${CONDA_DIR}/bin/conda init \
-  && source /root/.bashrc
+  && rm ${INSTALLER}
 
 # install the conda environment
 COPY environment.yml .
-RUN conda update -n base -c defaults conda -y \
-  && conda env create --file environment.yml && conda clean --all -y
+RUN ${CONDA} update -n base -c defaults conda -y \
+  && ${CONDA} env create --file environment.yml && ${CONDA} clean --all -y
 
 # container entry command
-ENTRYPOINT ["conda", "run", "--no-capture-output", "-n", "big-trees"]
+ENTRYPOINT ["${CONDA}", "run", "--no-capture-output", "-n", "big-trees"]
