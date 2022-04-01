@@ -23,10 +23,9 @@ RUN curl -o ${INSTALLER} "https://repo.anaconda.com/miniconda/Miniconda3-latest-
   && bash ${INSTALLER} -b -p ${CONDA_DIR} \
   && rm ${INSTALLER}
 
-# install the conda environment
+# install conda env
 COPY environment.yml .
 RUN ${CONDA} update -n base -c defaults conda -y \
   && ${CONDA} env create --file environment.yml && ${CONDA} clean --all -y
 
-# container entry command
-ENTRYPOINT ["${CONDA}", "run", "--no-capture-output", "-n", "big-trees"]
+ENTRYPOINT ${CONDA} run --no-capture-output --name big-trees
