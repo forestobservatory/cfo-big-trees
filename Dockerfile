@@ -1,5 +1,7 @@
 FROM ubuntu:20.04
 
+SHELL ["/bin/bash", "-c"]
+
 # create working directory
 ENV APP_HOME /app
 WORKDIR $APP_HOME
