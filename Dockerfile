@@ -8,7 +8,7 @@ WORKDIR $APP_HOME
 
 # install gsutil dependencies
 RUN apt-get --allow-releaseinfo-change update -yq \
-  && apt-get install -yq gcc python-dev python-setuptools libffi-dev curl \
+  && apt-get install -yq gcc python-dev python-setuptools libffi-dev curl git \
   && apt-get autoclean -y \
   && rm -rf /var/lib/apt/lists/*
 
