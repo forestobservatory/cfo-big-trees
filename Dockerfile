@@ -15,8 +15,8 @@ RUN curl -sSL https://sdk.cloud.google.com | bash
 
 # install the conda environment
 COPY environment.yml .
-RUN conda update -n base -c defaults conda -y \
-  && conda env create --file environment.yml && conda clean --all -y
+RUN /opt/conda update -c defaults conda -y \
+  && /opt/conda env create --file environment.yml && /opt/conda clean --all -y
 
 # container entry command
-ENTRYPOINT ["conda", "run", "--no-capture-output", "-n", "big-trees"]
+ENTRYPOINT ["/opt/conda", "run", "--no-capture-output", "-n", "big-trees"]
