@@ -28,4 +28,4 @@ COPY environment.yml .
 RUN ${CONDA} update -n base -c defaults conda -y \
   && ${CONDA} env create --file environment.yml && ${CONDA} clean --all -y
 
-ENTRYPOINT ${CONDA} run --no-capture-output --name big-trees
+ENV PATH="${CONDA_DIR}/bin:${PATH}"
