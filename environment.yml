@@ -2,15 +2,17 @@ name: big-trees
 
 channels:
   - conda-forge
-  - defaults
+  - nodefaults
 
 dependencies:
   - python
+  - cmocean
   - descartes
   - gcsfs
   - gdal
   - geopandas
   - ipython
+  - jupyter
   - matplotlib
   - pandas
   - r-base
